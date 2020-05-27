@@ -13,14 +13,17 @@ export class BookOverviewComponent {
   constructor() {
     this.books = [
       {
+        id: 0,
         author: 'John Example',
         title: 'Angular in action'
       },
       {
+        id: 1,
         author: 'Douglas Crockford',
         title: 'JavaScript. The good parts'
       },
       {
+        id: 2,
         author: 'Marek Matczak',
         title: 'Angular for nerds'
       },
@@ -33,5 +36,11 @@ export class BookOverviewComponent {
 
   isBookSelected(book: Book): boolean {
     return book === this.selectedBook;
+  }
+
+  updateBooksWith(changedBook: Book) {
+    this.books = this.books.map(
+      book => book.id === changedBook.id ? changedBook : book);
+    this.selectedBook = changedBook;
   }
 }

@@ -22,6 +22,7 @@
   <div class="col-4">
     <app-book-details
       *ngIf="selectedBook"
-      [book]="selectedBook"></app-book-details>
+      [book]="selectedBook"
+      (bookChange)="updateBooksWith($event)"></app-book-details>
   </div>
 </section>
