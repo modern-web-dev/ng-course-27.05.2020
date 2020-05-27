@@ -1,18 +1,13 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Book} from '../book';
 
 @Component({
   selector: 'app-book-details',
   templateUrl: './book-details.component.html',
-  styleUrls: ['./book-details.component.scss']
+  styleUrls: ['./book-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BookDetailsComponent {
+  @Input()
   book: Book;
-
-  constructor() {
-    this.book = {
-      author: 'John Example',
-      title: 'Angular in action'
-    };
-  }
 }
