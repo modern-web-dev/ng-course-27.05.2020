@@ -1,5 +1,7 @@
 import {Component} from '@angular/core';
 import {Book} from '../book';
+import {Observable} from 'rxjs';
+import {BookService} from '../book.service';
 
 @Component({
   selector: 'app-book-overview',
@@ -7,27 +9,11 @@ import {Book} from '../book';
   styleUrls: ['./book-overview.component.scss']
 })
 export class BookOverviewComponent {
-  books: Book[];
+  books$: Observable<Book[]>;
   selectedBook: Book | undefined;
 
-  constructor() {
-    this.books = [
-      {
-        id: 0,
-        author: 'John Example',
-        title: 'Angular in action'
-      },
-      {
-        id: 1,
-        author: 'Douglas Crockford',
-        title: 'JavaScript. The good parts'
-      },
-      {
-        id: 2,
-        author: 'Marek Matczak',
-        title: 'Angular for nerds'
-      },
-    ];
+  constructor(private readonly books: BookService) {
+    this.books$ = books.values$;
   }
 
   selectBook(book: Book): void {
@@ -39,8 +25,7 @@ export class BookOverviewComponent {
   }
 
   updateBooksWith(changedBook: Book) {
-    this.books = this.books.map(
-      book => book.id === changedBook.id ? changedBook : book);
-    this.selectedBook = changedBook;
+    this.books.update(changedBook)
+      .subscribe(book => this.selectedBook = book);
   }
 }
