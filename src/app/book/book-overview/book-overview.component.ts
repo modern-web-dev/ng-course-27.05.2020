@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {Book} from '../book';
 import {Observable} from 'rxjs';
 import {BookService} from '../book.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-book-overview',
@@ -10,22 +11,13 @@ import {BookService} from '../book.service';
 })
 export class BookOverviewComponent {
   books$: Observable<Book[]>;
-  selectedBook: Book | undefined;
 
-  constructor(private readonly books: BookService) {
+  constructor(private readonly books: BookService,
+              private readonly router: Router) {
     this.books$ = books.values$;
   }
 
-  selectBook(book: Book): void {
-    this.selectedBook = book;
-  }
-
-  isBookSelected(book: Book): boolean {
-    return book === this.selectedBook;
-  }
-
-  updateBooksWith(changedBook: Book) {
-    this.books.update(changedBook)
-      .subscribe(book => this.selectedBook = book);
+  goToDetails(book: Book) {
+    this.router.navigate(['/book']);
   }
 }
