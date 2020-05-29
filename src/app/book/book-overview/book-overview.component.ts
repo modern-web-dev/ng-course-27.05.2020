@@ -14,7 +14,7 @@ export class BookOverviewComponent {
 
   constructor(private readonly books: BookService,
               private readonly router: Router) {
-    this.books$ = books.values$;
+    this.books$ = books.getAll();
   }
 
   goToDetails(book: Book) {

@@ -1,0 +1,34 @@
+{
+  "books": [
+    {
+      "id": 0,
+      "author": "John Example",
+      "title": "Angular in action"
+    },
+    {
+      "author": "Douglas Crockfo",
+      "title": "JavaScript. The good parts",
+      "id": 1
+    },
+    {
+      "author": "dfsdafgasd",
+      "title": "äödfä",
+      "id": 2
+    },
+    {
+      "author": "Marek Matczak",
+      "title": "Angular for nerds",
+      "id": 3
+    },
+    {
+      "author": "Johnny",
+      "title": "Funny book",
+      "id": 4
+    },
+    {
+      "author": "uzkuzi",
+      "title": "kukuz",
+      "id": 5
+    }
+  ]
+}

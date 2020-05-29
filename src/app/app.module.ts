@@ -8,6 +8,7 @@ import {Router, RouterModule} from '@angular/router';
 import {BookOverviewComponent} from './book/book-overview/book-overview.component';
 import {BookDetailsComponent} from './book/book-details/book-details.component';
 import {BookResolver} from './book/book-details/book.resolver';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import {BookResolver} from './book/book-details/book.resolver';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BookModule,
     SharedModule,
     RouterModule.forRoot([

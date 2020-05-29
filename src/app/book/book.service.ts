@@ -1,62 +1,28 @@
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Book} from './book';
 import {Injectable} from '@angular/core';
-import {delay} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookService {
-  private idSeq = 0;
-  private readonly bookSubject = new BehaviorSubject<Book[]>([
-    {
-      id: this.idSeq++,
-      author: 'John Example',
-      title: 'Angular in action'
-    },
-    {
-      id: this.idSeq++,
-      author: 'Douglas Crockford',
-      title: 'JavaScript. The good parts'
-    },
-    {
-      id: this.idSeq++,
-      author: 'Marek Matczak',
-      title: 'Angular for nerds'
-    },
-  ]);
+  constructor(private readonly http: HttpClient) {
+  }
 
-  values$ = this.bookSubject.asObservable();
+  getAll(): Observable<Book[]> {
+    return this.http.get<Book[]>('api/books');
+  }
 
   getOne(id: number): Observable<Book> {
-    return new Observable<Book>(subscriber => {
-      const currentBooks = this.bookSubject.getValue();
-      const book = currentBooks.find(currentBook => currentBook.id === id);
-      if (book) {
-        subscriber.next(book);
-        subscriber.complete();
-      } else {
-        subscriber.error(`No book with id ${id} found`);
-      }
-    }).pipe(delay(2000));
+    return this.http.get<Book>(`api/books/${id}`);
   }
 
   saveOrUpdate(bookToSaveOrUpdate: Book): Observable<Book> {
-    return new Observable<Book>(subscriber => {
-      const currentBooks = this.bookSubject.getValue();
-      let newBooks;
-      let currentBook: Book;
-      if (bookToSaveOrUpdate.id >= 0) {
-        currentBook = {...bookToSaveOrUpdate};
-        newBooks = currentBooks.map(
-          book => book.id === currentBook.id ? currentBook : book);
-      } else {
-        currentBook = {...bookToSaveOrUpdate, id: this.idSeq++};
-        newBooks = [...currentBooks, currentBook];
-      }
-      this.bookSubject.next(newBooks);
-      subscriber.next(currentBook);
-      subscriber.complete();
-    });
+    return bookToSaveOrUpdate.id >= 0 ?
+      this.http.put<Book>(
+        `api/books/${bookToSaveOrUpdate.id}`, bookToSaveOrUpdate) :
+      this.http.post<Book>(
+        'api/books', bookToSaveOrUpdate);
   }
 }
