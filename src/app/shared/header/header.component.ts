@@ -8,14 +8,22 @@ import {filter, map} from 'rxjs/operators';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
-  changingDialog$;
+  showOrHide$;
 
   constructor(router: Router) {
-    this.changingDialog$ = router.events
+    this.showOrHide$ = router.events
       .pipe(
-        filter((e: RouterEvent) => e instanceof NavigationStart ||
-          e instanceof NavigationEnd || e instanceof NavigationError),
-        map((e: RouterEvent) => e instanceof NavigationStart)
+        onlyStartAndEndNavigation(),
+        showOnNavigationStartAndHideOnNavigationEnd()
       );
   }
+}
+
+function showOnNavigationStartAndHideOnNavigationEnd() {
+  return map<RouterEvent, boolean>((e: RouterEvent) => e instanceof NavigationStart);
+}
+
+function onlyStartAndEndNavigation() {
+  return filter<RouterEvent>((e: RouterEvent) => e instanceof NavigationStart ||
+    e instanceof NavigationEnd || e instanceof NavigationError);
 }
