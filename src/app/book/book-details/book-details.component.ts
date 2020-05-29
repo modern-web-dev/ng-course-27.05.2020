@@ -1,5 +1,9 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Book} from '../book';
+import {BookService} from '../book.service';
+import {ActivatedRoute, Data, Router} from '@angular/router';
+import {map, pluck, tap} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-book-details',
@@ -8,13 +12,25 @@ import {Book} from '../book';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BookDetailsComponent {
-  @Input()
-  book: Book;
+  book$: Observable<Book>;
+  private bookId: number | undefined;
 
-  @Output()
-  bookChange = new EventEmitter<Book>();
+  constructor(private readonly books: BookService,
+              private readonly router: Router,
+              route: ActivatedRoute) {
+    this.book$ = route.data
+      .pipe(
+        getBook(),
+        createEmptyBookIfNoBookAvailable(),
+        this.setBookId()
+      );
+  }
 
-  notifyOnBookChange(event: Event) {
+  private setBookId() {
+    return tap<Book>(book => this.bookId = book.id);
+  }
+
+  save(event: Event) {
     event.preventDefault();
     const formElement = event.target as HTMLFormElement;
     const authorElement = formElement.querySelector<HTMLInputElement>('#author');
@@ -22,8 +38,17 @@ export class BookDetailsComponent {
     const titleElement = formElement.querySelector<HTMLInputElement>('#title');
     const title = titleElement.value;
     const changedBook: Book = {
-      id: this.book.id, author, title
+      id: this.bookId, author, title
     };
-    this.bookChange.emit(changedBook);
+    this.books.saveOrUpdate(changedBook)
+      .subscribe(() => this.router.navigate(['/books']));
   }
+}
+
+function getBook() {
+  return pluck<Data, Book>('book');
+}
+
+function createEmptyBookIfNoBookAvailable() {
+  return map<Book | undefined, Book>(book => book || {author: '', title: ''});
 }

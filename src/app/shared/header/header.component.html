@@ -11,4 +11,7 @@
          [routerLink]="'/book'" [routerLinkActive]="'active'">Add a new book...</a>
     </div>
   </div>
+  <div *ngIf="changingDialog$ | async" class="spinner-border text-light" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
 </nav>

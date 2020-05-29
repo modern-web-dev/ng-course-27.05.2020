@@ -18,6 +18,6 @@ export class BookOverviewComponent {
   }
 
   goToDetails(book: Book) {
-    this.router.navigate(['/book']);
+    this.router.navigate(['/book', book.id]);
   }
 }
