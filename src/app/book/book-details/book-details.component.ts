@@ -20,7 +20,7 @@ export class BookDetailsComponent {
               route: ActivatedRoute) {
     this.bookForm = new FormGroup({
       author: new FormControl(null,
-        [Validators.required, Validators.maxLength(15)]),
+        [Validators.required, Validators.maxLength(20)]),
       title: new FormControl(null, Validators.required)
     });
 
