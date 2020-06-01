@@ -7,9 +7,9 @@ import { SharedModule } from './shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { BookOverviewComponent } from './book/book-overview/book-overview.component';
 import { BookDetailsComponent } from './book/book-details/book-details.component';
-import { BookResolver } from './book/book-details/book.resolver';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [AppComponent],
@@ -17,6 +17,7 @@ import { StoreModule } from '@ngrx/store';
     BrowserModule,
     HttpClientModule,
     StoreModule.forRoot({}),
+    EffectsModule.forRoot([]),
     BookModule,
     SharedModule,
     RouterModule.forRoot([
@@ -31,10 +32,7 @@ import { StoreModule } from '@ngrx/store';
       },
       {
         path: 'book/:bookId',
-        component: BookDetailsComponent,
-        resolve: {
-          book: BookResolver
-        }
+        component: BookDetailsComponent
       }
     ])
   ],

@@ -1,9 +1,12 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Book} from '../book';
-import {BookService} from '../book.service';
-import {ActivatedRoute, Data, Router} from '@angular/router';
-import {map, pluck, tap} from 'rxjs/operators';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Book } from '../book';
+import { BookService } from '../book.service';
+import { ActivatedRoute, Data, Router, Params } from '@angular/router';
+import { map, pluck, tap } from 'rxjs/operators';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import * as fromActions from '../store/books/books.actions';
+import { selectedBook } from '../store/books/books.selectors';
 
 @Component({
   selector: 'app-book-details',
@@ -15,52 +18,66 @@ export class BookDetailsComponent {
   bookForm: FormGroup;
   private bookId: number | undefined;
 
-  constructor(private readonly books: BookService,
-              private readonly router: Router,
-              route: ActivatedRoute) {
+  constructor(
+    private readonly books: BookService,
+    private readonly router: Router,
+    route: ActivatedRoute,
+    private store: Store
+  ) {
     this.bookForm = new FormGroup({
-      author: new FormControl(null,
-        [Validators.required, Validators.maxLength(20)]),
+      author: new FormControl(null, [
+        Validators.required,
+        Validators.maxLength(20)
+      ]),
       title: new FormControl(null, Validators.required)
     });
 
-    route.data
-      .pipe(
-        getBook(),
-        createEmptyBookIfNoBookAvailable(),
-        this.setBookId()
-      )
+    route.params.pipe(this.dispatchAction());
+
+    this.store
+      .select(selectedBook)
+      .pipe(createEmptyBookIfNoBookAvailable(), this.setBookId())
       .subscribe(book => this.bookForm.patchValue(book));
   }
 
   private setBookId() {
-    return tap<Book>(book => this.bookId = book.id);
+    return tap<Book>(book => (this.bookId = book.id));
+  }
+
+  private dispatchAction() {
+    return tap((params: Params) =>
+      this.store.dispatch(fromActions.loadBook({ bookId: params.bookId }))
+    );
   }
 
   save() {
     if (this.bookForm.valid) {
       const changedBook: Book = {
-        ...this.bookForm.value, id: this.bookId
+        ...this.bookForm.value,
+        id: this.bookId
       };
-      this.books.saveOrUpdate(changedBook)
+      this.books
+        .saveOrUpdate(changedBook)
         .subscribe(() => this.router.navigate(['/books']));
     }
   }
 
   getErrorsOf(controlName: string) {
-    const errors = this.bookForm.get(controlName) && this.bookForm.get(controlName).errors;
+    const errors =
+      this.bookForm.get(controlName) && this.bookForm.get(controlName).errors;
     if (errors) {
-      return Object.keys(errors)
-        .map(errorKey => {
-          switch (errorKey) {
-            case 'required': return 'Please provide a value';
-            case 'maxlength': {
-              const errorMeta = errors[errorKey];
-              return `Please provide value shorter than ${errorMeta.requiredLength} (currently ${errorMeta.actualLength} characters)`;
-            }
-            default: return 'Unknown error';
+      return Object.keys(errors).map(errorKey => {
+        switch (errorKey) {
+          case 'required':
+            return 'Please provide a value';
+          case 'maxlength': {
+            const errorMeta = errors[errorKey];
+            return `Please provide value shorter than ${errorMeta.requiredLength} (currently ${errorMeta.actualLength} characters)`;
           }
-        });
+          default:
+            return 'Unknown error';
+        }
+      });
     }
   }
 }
@@ -70,5 +87,5 @@ function getBook() {
 }
 
 function createEmptyBookIfNoBookAvailable() {
-  return map<Book | undefined, Book>(book => book || {author: '', title: ''});
+  return map<Book | undefined, Book>(book => book || { author: '', title: '' });
 }

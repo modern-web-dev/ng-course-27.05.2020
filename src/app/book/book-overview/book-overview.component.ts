@@ -15,11 +15,9 @@ import { selectAllBooks, AppState } from '../store/books/books.selectors';
 export class BookOverviewComponent {
   books$: Observable<Book[]>;
 
-  constructor(
-    private readonly books: BookService,
-    private readonly router: Router,
-    private store: Store<AppState>
-  ) {
+  constructor(private readonly router: Router, private store: Store<AppState>) {
+    console.log('Dispatched');
+    this.store.dispatch(fromActions.loadBooks());
     this.books$ = this.store.select(selectAllBooks);
   }
 

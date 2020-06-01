@@ -10,3 +10,9 @@ export const selectBook = createAction(
   '[BOOKS] SelectBook',
   props<{ book: Book }>()
 );
+
+export const loadBooks = createAction('[BOOKS] LoadBooks');
+export const loadBook = createAction(
+  '[BOOKS] LoadBooks',
+  props<{ bookId: number }>()
+);
